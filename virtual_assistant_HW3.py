@@ -130,7 +130,8 @@ class AddressBook(UserDict):
                     birthdays_per_week.append((day_of_week, record.name.value))
 
         return birthdays_per_week
-      
+    
+    #BOT  
 def input_error(func):
     def inner(*args, **kwargs):
         try:
@@ -247,6 +248,5 @@ def main():
         else:
             print("Invalid command.")
             
-
 if __name__ == "__main__":
     main()
