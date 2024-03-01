@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from collections import UserDict
+
 class Field:
     def __init__(self, value):
         self.value = value
@@ -105,15 +106,15 @@ class AddressBook(UserDict):
             record.add_birthday(birthday)
         else:
             raise KeyError(f"Record '{name}' not found")
-        
+      
     def get_birthdays_per_week(self):
         birthdays_per_week = []
-        today = datetime.today().date()
+        today = datetime.today()  # Змінено цей рядок
         days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
         for record in self.records.values():
             if record.birthday:
-                birthday = record.birthday.value
+                birthday = datetime.strptime(record.birthday.value, '%d.%m.%Y')
                 birthday_this_year = birthday.replace(year=today.year)
 
                 if birthday_this_year < today:
@@ -129,7 +130,6 @@ class AddressBook(UserDict):
                     birthdays_per_week.append((day_of_week, record.name.value))
 
         return birthdays_per_week
-
       
 def input_error(func):
     def inner(*args, **kwargs):
@@ -148,6 +148,7 @@ def parse_input(user_input):
     cmd = cmd.strip().lower()
     return cmd, *args
 
+
 @input_error
 def add_contact(args, address_book):
     name, phone = args
@@ -155,7 +156,10 @@ def add_contact(args, address_book):
         raise ValueError("Contact with this name already exists")
     else:
         record = Record(name)
-        record.add_phone(phone)
+        try:
+            record.add_phone(phone)
+        except ValueError as e:
+            return str(e)  # Повертаємо повідомлення про помилку
         address_book.add_record(record)
         return "Contact added"
 
@@ -211,8 +215,8 @@ def show_birthday(args, address_book):
     else:
         raise KeyError("Contact not found")      
 
-def birthdays(address_book):
-    return AddressBook.get_birthdays_per_week()
+def birthdays(args, address_book):
+    return address_book.get_birthdays_per_week()
 
 def main():
     book = AddressBook()
@@ -239,7 +243,7 @@ def main():
         elif command == "show-birthday":
             print(show_birthday(args, book))
         elif command == "birthdays":
-            print(birthdays(book))       
+            print(birthdays(args,book))       
         else:
             print("Invalid command.")
             
