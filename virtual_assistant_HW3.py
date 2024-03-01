@@ -185,10 +185,10 @@ def show_phone(args, address_book):
 
   
 def show_all(address_book):
-    if not address_book.records:
+    if not address_book:
         return "There are no contacts."
     else:
-        for record in address_book.records.values():
+        for record in address_book.values():
             print(record)
             
 
